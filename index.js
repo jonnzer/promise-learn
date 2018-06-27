@@ -1,14 +1,20 @@
 function johnPromise(fn) {
-	var value = null,
+	var state = 'pending',  // 增加状态
+		value = null,
 		callbacks = [] // 为数组，可能有很多个回调
 
 	this.then = function (onFulifilled) {  // 注册回调函数
-		callbacks.push(onFulifilled)
-		console.log(callbacks)
-		return this                        // then..then的链式调用
+		if (state === 'pending') {
+			callbacks.push(onFulifilled)
+			return this                        // then..then的链式调用
+		}
+		onFulifilled(value)
+		return this
 	}
 
-	function resolve(value) {
+	function resolve(newValue) {
+		value = newValue
+		state = 'fulfilled'
 		setTimeout(function () {
 			callbacks.forEach(function (callback) {
 				callback(value)
